@@ -11,7 +11,7 @@ app.use(compression());
 
 app.use(
   cors({
-    origin: 'todo-front-end-beta.vercel.app',
+    origin: 'https://todo-front-end-beta.vercel.app',
     credentials: true,
   })
 );
