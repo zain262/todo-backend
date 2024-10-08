@@ -11,7 +11,7 @@ router.post(
   userController.createAdmin
 );
 
-router.get('/logout', authController.logout);
+router.post('/logout', authController.logout);
 router.post('/signup', authController.signup);
 router.post('/login', authController.login);
 
