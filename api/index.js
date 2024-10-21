@@ -9,6 +9,7 @@ const compression = require('compression');
 
 app.use(compression());
 
+//set up cors
 app.use(
   cors({
     origin: 'https://todo-front-end-beta.vercel.app/login',
@@ -16,12 +17,14 @@ app.use(
   })
 );
 
+//Add cookie parser for jwt
 app.use(cookieParser());
 app.use(express.json());
 
 const DB =
   'mongodb+srv://Zain262:DFmwEFTe5!LhLGb@cluster0.wetna.mongodb.net/todo?retryWrites=true&w=majority&appName=Cluster0';
 
+//Connect to the back end
 mongoose
   .connect(DB, {
     useNewUrlParser: true,
@@ -34,13 +37,13 @@ mongoose
     console.error('DB CONNECTION ERROR:', err);
   });
 
-// Routes
 app.get('/', (req, res) => {
   res.json({
     message: 'hello',
   });
 });
 
+//Add the routes
 app.use('/api/v1/user', userRouter);
 app.use('/api/v1/todo', todoRouter);
 

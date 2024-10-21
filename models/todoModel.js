@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
+//To do model
 const todoSchema = new Schema({
   userid: {
     type: Schema.Types.ObjectId,

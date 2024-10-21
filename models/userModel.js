@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 const bcrypt = require('bcryptjs');
 
+//Create the user model
 const userSchema = new Schema({
   username: {
     type: String,
@@ -21,6 +22,7 @@ const userSchema = new Schema({
   },
 });
 
+//Before saving the user encrypt the password
 userSchema.pre('save', async function (next) {
   this.password = await bcrypt.hash(this.password, 12);
   next();

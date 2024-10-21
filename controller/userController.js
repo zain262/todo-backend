@@ -2,6 +2,8 @@ const User = require('../models/userModel');
 const Todo = require('../models/todoModel');
 
 exports.createAdmin = async (req, res, next) => {
+  //ADMIN ROUTE USED TO CREATE ADMIN ACCOUNT
+
   const user = {
     username: req.body.username,
     password: req.body.password,

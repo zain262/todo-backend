@@ -10,6 +10,8 @@ exports.signup = async (req, res, next) => {
     password: req.body.password,
   };
 
+  //Get the users info
+
   try {
     const newUser = await User.create(userInfo);
 
@@ -17,6 +19,7 @@ exports.signup = async (req, res, next) => {
       userid: newUser._id,
       list: [],
     });
+    //Create a new user and an empty todo list for the user
 
     const token = jwt.sign(
       { id: newUser._id },
@@ -26,12 +29,16 @@ exports.signup = async (req, res, next) => {
       }
     );
 
+    //Create a new token from the users id
+
     res.cookie('jwt', token, {
       httpOnly: true,
       sameSite: 'None',
       expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
       secure: true,
     });
+
+    //Send the new token
 
     res.status(201).json({
       message: 'success',
@@ -48,6 +55,7 @@ exports.login = async (req, res, next) => {
   try {
     const { username, password } = req.body;
 
+    //Get the users password and username and make sure they are both present
     if (!username || !password) {
       return res.status(400).json({
         message: 'Please provide both a username and password.',
@@ -55,13 +63,14 @@ exports.login = async (req, res, next) => {
     }
 
     const user = await User.findOne({ username }).select('+password');
-
+    //Find the user by their username and check if they exist
     if (!user) {
       return res.status(401).json({
         message: 'Incorrect username or password.',
       });
     }
 
+    //Check if they password sent in the request matches the one in the data base
     const compare = await bcrypt.compare(password, user.password);
 
     if (!compare) {
@@ -70,6 +79,7 @@ exports.login = async (req, res, next) => {
       });
     }
 
+    //If its  match creaet a new jwt token and send it as a cookie
     const token = jwt.sign(
       { id: user._id },
       'LEBRON-LEBRON-LEBRON-LEBRON-23-62',
@@ -98,6 +108,7 @@ exports.login = async (req, res, next) => {
 exports.protect = async (req, res, next) => {
   let token;
 
+  //Get the jwt token
   if (req.cookies && req.cookies.jwt) {
     token = req.cookies.jwt;
   }
@@ -107,13 +118,14 @@ exports.protect = async (req, res, next) => {
       message: 'You are not logged in! Please log in to get access.',
     });
   }
-
+  //Check if the token exists if it does decode it
   try {
     const decoded = await promisify(jwt.verify)(
       token,
       'LEBRON-LEBRON-LEBRON-LEBRON-23-62'
     );
 
+    //Find the users info by the decoded id
     const currentUser = await User.findById(decoded.id);
     if (!currentUser) {
       return res.status(401).json({
@@ -121,6 +133,7 @@ exports.protect = async (req, res, next) => {
       });
     }
 
+    //Set the users info for the next middleware
     if (!req.body.signup) {
       req.body.userId = decoded.id;
       req.body.username = currentUser.username;
@@ -140,6 +153,7 @@ exports.protect = async (req, res, next) => {
 };
 
 exports.adminAcess = async (req, res, next) => {
+  //Check if the user is admin if not send unauth error
   if (req.body.role !== 'admin') {
     return next(
       res.status(401).json({
@@ -152,6 +166,7 @@ exports.adminAcess = async (req, res, next) => {
 };
 
 exports.logout = (req, res, next) => {
+  //Replace token with dummy token
   res.cookie('jwt', 'loggedout', {
     httpOnly: true,
     sameSite: 'None',
